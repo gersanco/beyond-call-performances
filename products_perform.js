@@ -1,5 +1,6 @@
 
-const services = require('./services')
+require('dotenv').config();
+const services = require('./services');
 
 
 const run = async () => {
@@ -8,7 +9,7 @@ const run = async () => {
   const totalProducts = await getTotalElements(token);
 
   console.log('*'.repeat(45));
-  console.log('List all products in sequence')
+  console.log(`List all products in sequence`)
   console.log('*'.repeat(45));
 
   console.log(`Total products: ${totalProducts}`);
@@ -22,13 +23,13 @@ const run = async () => {
 };
 
 const getTotalElements = async (token) => {
-  const listProducts = await services.listProducts(token, {size: 1});
+  const listProducts = await services.listProducts(token, {size: process.env.SIZE});
 
   return totalProducts = listProducts.page.totalElements;
 };
 
 const getArrayPages = totalElements => {
-  const maxPages = Math.ceil(totalElements / 1000);
+  const maxPages = Math.ceil(totalElements / process.env.SIZE);
 
   return [...Array(maxPages).keys()];
 };
@@ -47,7 +48,7 @@ const fetchPages = async (token, page, pageIterators) => {
   console.time(`Getting page ${page}`);
 
   try {
-    await services.listProducts(token, {size: 1000, page});
+    await services.listProducts(token, {size: process.env.SIZE, page});
     console.timeEnd(`Getting page ${page}`);
     handlePages(token, pageIterators)
   } catch (error) {
@@ -83,7 +84,7 @@ const handlePagesInParallel = async (token, pages) => {
   let page = pageIterators.next();
 
   while (!page.done) {
-    promises.push(services.listProducts(token, {size: 1000, page}));
+    promises.push(services.listProducts(token, {size: process.env.SIZE, page}));
     page = pageIterators.next();
   }
 
